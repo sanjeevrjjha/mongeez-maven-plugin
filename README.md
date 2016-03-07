@@ -60,5 +60,9 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
 
 Create _mongeez.xml_ with all change logs. See [how to use mongeez](https://github.com/mongeez/mongeez/wiki/How-to-use-mongeez).
 
+### Travis Continuous Integration Build Status
+
+[![Build Status](https://travis-ci.org/coderion/mongeez-maven-plugin.svg?branch=master)](https://travis-ci.org/coderion/mongeez-maven-plugin)
+
 ### License
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
