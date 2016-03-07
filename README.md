@@ -1,5 +1,5 @@
 # mongeez-maven-plugin
-Maven plugin for MongoDB migrations
+Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/mongeez))
 
 #### Current version: 0.9.0-SNAPSHOT
 
@@ -30,8 +30,8 @@ Maven plugin for MongoDB migrations
                 <artifactId>mongeez-maven-plugin</artifactId>
                 <version>0.9.0-SNAPSHOT</version>
                 <configuration>
-                    <changeLogFile>src/main/mongeez/mongeez.xml</changeLogFile>
                     <propertyFile>src/main/mongeez/config.properties</propertyFile>
+                    <changeLogFile>src/main/mongeez/mongeez.xml</changeLogFile>
                 </configuration>
             </plugin>
         </plugins>
@@ -44,6 +44,18 @@ Maven plugin for MongoDB migrations
     mvn mongeez:update
     ```
 
+
 ### Configuration
 
-TODO
+* ##### propertyFile
+
+    config.properties:
+    ```
+    mongodb.host=localhost
+    mongodb.port=27017
+    mongodb.database.name=dbname
+    ```
+
+* ##### changeLogFile
+
+Create _mongeez.xml_ with all change logs. See [how to use mongeez](https://github.com/mongeez/mongeez/wiki/How-to-use-mongeez).
