@@ -5,7 +5,7 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
 
 ### Usage
 
-1. Add snapshot repository to your POM
+1. Add snapshot repository to your POM (because it's not in Maven Central yet)
 
     ```
     <pluginRepositories>
