@@ -7,7 +7,7 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
 
 1. Add snapshot repository to your POM (because it's not in Maven Central yet)
 
-    ```
+    ```xml
     <pluginRepositories>
         <pluginRepository>
             <id>coderion-public-snapshots</id>
@@ -22,7 +22,7 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
 
 2. Add build plugin to your POM
 
-    ```
+    ```xml
     <build>
         <plugins>
             <plugin>
