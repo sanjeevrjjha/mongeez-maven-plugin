@@ -59,3 +59,6 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
 * ##### changeLogFile
 
 Create _mongeez.xml_ with all change logs. See [how to use mongeez](https://github.com/mongeez/mongeez/wiki/How-to-use-mongeez).
+
+### License
+Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
