@@ -55,6 +55,11 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
     mongodb.port=27017
     mongodb.database.name=dbname
     ```
+    (Optionally)
+    ```
+    mongo.user.name=<username>
+    mongo.user.password=<password>
+    ```
 
 * ##### changeLogFile
 

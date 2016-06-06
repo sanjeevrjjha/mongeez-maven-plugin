@@ -1,12 +1,14 @@
 package pl.coderion.mongodb;
 
 import com.mongodb.Mongo;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.mongeez.Mongeez;
+import org.mongeez.MongoAuth;
 import org.springframework.core.io.FileSystemResource;
 
 import java.io.File;
@@ -21,6 +23,8 @@ public class MongeezMavenPlugin extends AbstractMojo {
     private static final String MONGODB_HOST_PROPERTY = "mongodb.host";
     private static final String MONGODB_PORT_PROPERTY = "mongodb.port";
     private static final String MONGODB_DATABASE_NAME_PROPERTY = "mongodb.database.name";
+    private static final String MONGODB_USER_NAME = "mongodb.user.name";
+    private static final String MONGODB_USER_PASSWD = "mongodb.user.password";
 
     @Parameter(property = "update.changeLogFile", defaultValue = "src/main/mongeez/mongeez.xml")
     private File changeLogFile;
@@ -38,6 +42,14 @@ public class MongeezMavenPlugin extends AbstractMojo {
             mongeez.setFile(new FileSystemResource(changeLogFile));
             mongeez.setMongo(new Mongo(properties.getProperty(MONGODB_HOST_PROPERTY),
                     Integer.valueOf(properties.getProperty(MONGODB_PORT_PROPERTY))));
+
+            if (!StringUtils.isBlank(properties.getProperty(MONGODB_USER_NAME)) &&
+                    !StringUtils.isBlank(properties.getProperty(MONGODB_USER_PASSWD))) {
+                mongeez.setAuth(new MongoAuth(properties.getProperty(MONGODB_USER_NAME),
+                        properties.getProperty(MONGODB_USER_PASSWD),
+                        properties.getProperty(MONGODB_DATABASE_NAME_PROPERTY)));
+            }
+
             mongeez.setDbName(properties.getProperty(MONGODB_DATABASE_NAME_PROPERTY));
             mongeez.process();
 
