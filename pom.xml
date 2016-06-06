@@ -37,7 +37,7 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>coderion-public-snapshots</id>
+            <id>coderion-snapshots</id>
             <name>Coderion Public Snapshots</name>
             <url>${coderion-public-snapshots.url}</url>
         </snapshotRepository>
