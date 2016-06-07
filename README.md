@@ -61,6 +61,22 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
     mongo.user.password=<password>
     ```
 
+Example usage:
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>pl.coderion.mongodb</groupId>
+                <artifactId>mongeez-maven-plugin</artifactId>
+                <version>0.9.1-SNAPSHOT</version>
+                <configuration>
+                    <changeLogFile>src/main/mongeez/mongeez.xml</changeLogFile>
+                    <propertyFile>src/main/mongeez/config.properties</propertyFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 * ##### changeLogFile
 
 Create _mongeez.xml_ with all change logs. See [how to use mongeez](https://github.com/mongeez/mongeez/wiki/How-to-use-mongeez).
