@@ -1,26 +1,11 @@
 # mongeez-maven-plugin
 Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/mongeez))
 
-#### Current version: 0.9.1-SNAPSHOT
+#### Current version: 0.9.1
 
 ### Usage
 
-1. Add snapshot repository to your POM (because it's not in Maven Central yet)
-
-    ```xml
-    <pluginRepositories>
-        <pluginRepository>
-            <id>coderion-public-snapshots</id>
-            <name>Coderion Public Snapshots</name>
-            <url>http://nexus.coderion.pl/nexus/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
-    ```
-
-2. Add build plugin to your POM
+1. Add build plugin dependency to your POM
 
     ```xml
     <build>
@@ -28,7 +13,7 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
             <plugin>
                 <groupId>pl.coderion.mongodb</groupId>
                 <artifactId>mongeez-maven-plugin</artifactId>
-                <version>0.9.1-SNAPSHOT</version>
+                <version>0.9.1</version>
                 <configuration>
                     <propertyFile>src/main/mongeez/config.properties</propertyFile>
                     <changeLogFile>src/main/mongeez/mongeez.xml</changeLogFile>
@@ -38,7 +23,7 @@ Maven plugin for MongoDB migrations (uses [Mongeez](https://github.com/mongeez/m
     </build>
     ```
 
-3. Run maven goal:
+2. Run maven goal:
 
     ```
     mvn mongeez:update
@@ -68,7 +53,7 @@ Example usage:
             <plugin>
                 <groupId>pl.coderion.mongodb</groupId>
                 <artifactId>mongeez-maven-plugin</artifactId>
-                <version>0.9.1-SNAPSHOT</version>
+                <version>0.9.1</version>
                 <configuration>
                     <changeLogFile>src/main/mongeez/mongeez.xml</changeLogFile>
                     <propertyFile>src/main/mongeez/config.properties</propertyFile>
