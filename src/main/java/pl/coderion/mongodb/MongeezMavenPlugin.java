@@ -1,70 +1,125 @@
 package pl.coderion.mongodb;
 
-import com.mongodb.Mongo;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.mongeez.Mongeez;
-import org.mongeez.MongoAuth;
-import org.springframework.core.io.FileSystemResource;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.mongeez.Mongeez;
+import org.mongeez.MongoAuth;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
+import org.springframework.core.io.FileSystemResource;
+
+import com.mongodb.Mongo;
+
 @Mojo(name = "update")
 public class MongeezMavenPlugin extends AbstractMojo {
-
-    private static final String MONGODB_HOST_PROPERTY = "mongodb.host";
-    private static final String MONGODB_PORT_PROPERTY = "mongodb.port";
-    private static final String MONGODB_DATABASE_NAME_PROPERTY = "mongodb.database.name";
-    private static final String MONGODB_USER_NAME = "mongodb.user.name";
-    private static final String MONGODB_USER_PASSWD = "mongodb.user.password";
 
     @Parameter(property = "update.changeLogFile", defaultValue = "src/main/mongeez/mongeez.xml")
     private File changeLogFile;
 
+    @Parameter(property = "db.hostname")
+    private String              dbHostName;
+
+    @Parameter(property = "db.name")
+    private String              dbName;
+
+    @Parameter(property = "db.port")
+    private String              dbPort;
+
+    @Parameter(property = "db.password")
+    private String              password;
+
     @Parameter(property = "update.propertyFile", defaultValue = "src/main/mongeez/config.properties")
     private File propertyFile;
 
+    @Component(role = org.sonatype.plexus.components.sec.dispatcher.SecDispatcher.class, hint = "default")
+    private SecDispatcher       securityDispatcher;
+
+    @Parameter(defaultValue = "false")
+    private boolean             skip;
+
+    @Parameter(property = "db.username")
+    private String              username;
+
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            FileInputStream propertyFileInputStream = new FileInputStream(propertyFile);
-            Properties properties = new Properties();
-            properties.load(propertyFileInputStream);
 
-            Mongeez mongeez = new Mongeez();
-            mongeez.setFile(new FileSystemResource(changeLogFile));
-            mongeez.setMongo(new Mongo(properties.getProperty(MONGODB_HOST_PROPERTY),
-                    Integer.valueOf(properties.getProperty(MONGODB_PORT_PROPERTY))));
+            final Properties properties = new Properties();
 
-            if (!StringUtils.isBlank(properties.getProperty(MONGODB_USER_NAME)) &&
-                    !StringUtils.isBlank(properties.getProperty(MONGODB_USER_PASSWD))) {
-                mongeez.setAuth(new MongoAuth(properties.getProperty(MONGODB_USER_NAME),
-                        properties.getProperty(MONGODB_USER_PASSWD),
-                        properties.getProperty(MONGODB_DATABASE_NAME_PROPERTY)));
+            if (null != propertyFile) {
+                final FileInputStream propertyFileInputStream = new FileInputStream(propertyFile);
+                properties.load(propertyFileInputStream);
             }
 
-            mongeez.setDbName(properties.getProperty(MONGODB_DATABASE_NAME_PROPERTY));
-            mongeez.process();
-
-        } catch (FileNotFoundException e) {
+            // use the property for parent projects (pom only) or for ignoring execution completely
+            if (skip) {
+                getLog().info("Skip Property found .. not executing.");
+            }
+            else {
+                try {
+                    setPassword(securityDispatcher.decrypt(getPassword()));
+                }
+                catch (final SecDispatcherException e) {
+                    throw new MojoExecutionException(e.getMessage());
+                }
+                final Mongeez mongeez = new Mongeez();
+                mongeez.setFile(new FileSystemResource(changeLogFile));
+                mongeez.setMongo(new Mongo(getDbHostName(), Integer.valueOf(getDbPort())));
+                mongeez.setAuth(new MongoAuth(getUsername(), getPassword(), getDbName()));
+                mongeez.setDbName(getDbName());
+                mongeez.process();
+            }
+        } catch (final FileNotFoundException e) {
             getLog().error(String.format("Configuration file %s not found", propertyFile.getAbsolutePath()));
             throw new RuntimeException();
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             getLog().error(String.format("An error occured during loading configuration file %s: %s",
                     propertyFile.getAbsolutePath(), e.getMessage()));
             throw new RuntimeException();
-
-        } catch (Exception e) {
+        } catch (final Exception e) {
             getLog().error(String.format("An unknown error occured: %s", e.getMessage()));
             throw new RuntimeException();
         }
+    }
+    public String getDbHostName() {
+        return dbHostName;
+    }
+    public String getDbName() {
+        return dbName;
+    }
+    public String getDbPort() {
+        return dbPort;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public String getUsername() {
+        return username;
+    }
+    public void setDbHostName(String dbHostName) {
+        this.dbHostName = dbHostName;
+    }
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+    public void setDbPort(String dbPort) {
+        this.dbPort = dbPort;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
