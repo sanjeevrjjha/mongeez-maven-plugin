@@ -25,11 +25,14 @@ public class MongeezMavenPlugin extends AbstractMojo {
 
     @Parameter(property = "update.changeLogFile", defaultValue = "src/main/mongeez/mongeez.xml")
     private File changeLogFile;
+    
+    @Parameter(property = "auth.db.name")
+    private String        authDbName;
 
     @Parameter(property = "db.hostname")
     private String              dbHostName;
 
-    @Parameter(property = "db.name")
+    @Parameter(property = "dbName")
     private String              dbName;
 
     @Parameter(property = "db.port")
@@ -75,7 +78,7 @@ public class MongeezMavenPlugin extends AbstractMojo {
                 final Mongeez mongeez = new Mongeez();
                 mongeez.setFile(new FileSystemResource(changeLogFile));
                 mongeez.setMongo(new Mongo(getDbHostName(), Integer.valueOf(getDbPort())));
-                mongeez.setAuth(new MongoAuth(getUsername(), getPassword(), getDbName()));
+                mongeez.setAuth(new MongoAuth(getUsername(), getPassword(), getAuthDbName()));
                 mongeez.setDbName(getDbName());
                 mongeez.process();
             }
@@ -92,6 +95,9 @@ public class MongeezMavenPlugin extends AbstractMojo {
             throw new RuntimeException();
         }
     }
+    public String getAuthDbName() {
+        return authDbName;
+    }
     public String getDbHostName() {
         return dbHostName;
     }
@@ -106,6 +112,9 @@ public class MongeezMavenPlugin extends AbstractMojo {
     }
     public String getUsername() {
         return username;
+    }
+    public void setAuthDbName(String authDbName) {
+        this.authDbName = authDbName;
     }
     public void setDbHostName(String dbHostName) {
         this.dbHostName = dbHostName;
