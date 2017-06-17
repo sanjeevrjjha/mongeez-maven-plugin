@@ -26,17 +26,26 @@ public class MongeezMavenPlugin extends AbstractMojo {
     @Parameter(property = "update.changeLogFile", defaultValue = "src/main/mongeez/mongeez.xml")
     private File changeLogFile;
 
-    @Parameter(property = "db.hostname")
+    @Parameter(property = "authEnabled", defaultValue = "false")
+    private boolean       authEnabled;
+
+    @Parameter(property = "auth.db.name", defaultValue = "admin")
+    private String        authDbName;
+
+    @Parameter(property = "db.hostname", defaultValue = "localhost")
     private String              dbHostName;
 
-    @Parameter(property = "db.name")
+    @Parameter(property = "dbName")
     private String              dbName;
 
-    @Parameter(property = "db.port")
-    private String              dbPort;
+    @Parameter(property = "db.port", defaultValue = "27017")
+    private int           dbPort;
 
-    @Parameter(property = "db.password")
+    @Parameter(property = "db.password", defaultValue = "")
     private String              password;
+
+    @Parameter(property = "pwdEncrypted", defaultValue = "false")
+    private boolean       pwdEncrypted;
 
     @Parameter(property = "update.propertyFile", defaultValue = "src/main/mongeez/config.properties")
     private File propertyFile;
@@ -47,7 +56,7 @@ public class MongeezMavenPlugin extends AbstractMojo {
     @Parameter(defaultValue = "false")
     private boolean             skip;
 
-    @Parameter(property = "db.username")
+    @Parameter(property = "db.username", defaultValue = "")
     private String              username;
 
     @Override
@@ -66,19 +75,29 @@ public class MongeezMavenPlugin extends AbstractMojo {
                 getLog().info("Skip Property found .. not executing.");
             }
             else {
-                try {
-                    setPassword(securityDispatcher.decrypt(getPassword()));
+
+                if (pwdEncrypted) {
+                    try {
+                        setPassword(securityDispatcher.decrypt(getPassword()));
+                    }
+                    catch (final SecDispatcherException e) {
+                        throw new MojoExecutionException(e.getMessage());
+                    }
                 }
-                catch (final SecDispatcherException e) {
-                    throw new MojoExecutionException(e.getMessage());
-                }
+
                 final Mongeez mongeez = new Mongeez();
                 mongeez.setFile(new FileSystemResource(changeLogFile));
-                mongeez.setMongo(new Mongo(getDbHostName(), Integer.valueOf(getDbPort())));
-                mongeez.setAuth(new MongoAuth(getUsername(), getPassword(), getDbName()));
+
+                mongeez.setMongo(new Mongo(getDbHostName(), getDbPort()));
+
+                if (authEnabled) {
+                    mongeez.setAuth(new MongoAuth(getUsername(), getPassword(), getAuthDbName()));
+                }
+
                 mongeez.setDbName(getDbName());
                 mongeez.process();
             }
+
         } catch (final FileNotFoundException e) {
             getLog().error(String.format("Configuration file %s not found", propertyFile.getAbsolutePath()));
             throw new RuntimeException();
@@ -87,39 +106,59 @@ public class MongeezMavenPlugin extends AbstractMojo {
             getLog().error(String.format("An error occured during loading configuration file %s: %s",
                     propertyFile.getAbsolutePath(), e.getMessage()));
             throw new RuntimeException();
+
         } catch (final Exception e) {
             getLog().error(String.format("An unknown error occured: %s", e.getMessage()));
             throw new RuntimeException();
         }
     }
+
+    public String getAuthDbName() {
+        return authDbName;
+    }
+
     public String getDbHostName() {
         return dbHostName;
     }
+
     public String getDbName() {
         return dbName;
     }
-    public String getDbPort() {
+
+    public int getDbPort() {
         return dbPort;
     }
+
     public String getPassword() {
         return password;
     }
+
     public String getUsername() {
         return username;
     }
+
+    public void setAuthDbName(String authDbName) {
+        this.authDbName = authDbName;
+    }
+
     public void setDbHostName(String dbHostName) {
         this.dbHostName = dbHostName;
     }
+
     public void setDbName(String dbName) {
         this.dbName = dbName;
     }
-    public void setDbPort(String dbPort) {
+
+    public void setDbPort(int dbPort) {
         this.dbPort = dbPort;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
+
 }
